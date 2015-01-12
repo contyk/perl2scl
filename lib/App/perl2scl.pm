@@ -56,8 +56,8 @@ sub go {
     $data =~ s/\^(perl\\*\()/^$p$1/sg;
 
     # Warn on suspicious things
-    push @info, "Suspicious `perl' calls detected!"
-        if $data =~ /perl -[^V]/s;
+    push @info, "Suspicious `perl' calls detected: ${^MATCH}!"
+        if $data =~ /perl -[^V].*/p;
     push @info, "Either `if' or `deprecate' used."
         if $data =~ /perl(\(if\)|\(deprecate\))/s;
     push @info, 'Explicit non-perl() style conflicts, [build]requires, provides, obsoletes or blocks: ' . ${^MATCH} . '.'
