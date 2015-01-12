@@ -1,0 +1,7 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+use App::perl2scl;
+
+App::perl2scl->go;

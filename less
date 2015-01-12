@@ -1,0 +1,149 @@
+%scl_package perl-CPANPLUS-Dist-Build
+
+Name:           %{scl_prefix}perl-CPANPLUS-Dist-Build
+Version:        0.70
+Release:        295%{?dist}
+Summary:        Module::Build extension for CPANPLUS
+License:        GPL+ or Artistic
+Group:          Development/Libraries
+URL:            http://search.cpan.org/dist/CPANPLUS-Dist-Build/
+Source0:        http://www.cpan.org/authors/id/B/BI/BINGOS/CPANPLUS-Dist-Build-%{version}.tar.gz
+BuildArch:      noarch
+BuildRequires:  %{scl_prefix}perl
+%if %{defined perl_bootstrap}
+BuildRequires:  %{scl_prefix}perl(base)
+BuildRequires:  %{scl_prefix}perl(Config)
+BuildRequires:  %{scl_prefix}perl(Cwd)
+BuildRequires:  %{scl_prefix}perl(ExtUtils::MakeMaker) >= 6.59
+BuildRequires:  %{scl_prefix}perl(ExtUtils::MM_Unix)
+BuildRequires:  %{scl_prefix}perl(Fcntl)
+BuildRequires:  %{scl_prefix}perl(File::Find)
+BuildRequires:  %{scl_prefix}perl(File::Path)
+BuildRequires:  %{scl_prefix}perl(FindBin)
+BuildRequires:  %{scl_prefix}perl(vars)
+BuildRequires:  %{scl_prefix}perl(warnings)
+%else
+BuildRequires:  %{scl_prefix}perl(inc::Module::Install)
+%if !(0%{?rhel} >= 7)
+BuildRequires:  %{scl_prefix}perl(Module::Install::AutoLicense)
+%endif
+# Module::Install::GithubMeta is optional and not usefull
+%endif
+BuildRequires:  %{scl_prefix}perl(strict)
+# Run-time:
+BuildRequires:  %{scl_prefix}perl(Config)
+BuildRequires:  %{scl_prefix}perl(constant)
+# This is a plug-in for CPANPLUS, specify reverse dependency here
+BuildRequires:  %{scl_prefix}perl(CPANPLUS) >= 0.84
+BuildRequires:  %{scl_prefix}perl(CPANPLUS::Error)
+BuildRequires:  %{scl_prefix}perl(CPANPLUS::Internals::Constants)
+BuildRequires:  %{scl_prefix}perl(Cwd)
+%if 0%(perl -e 'print $] > 5.017')
+BuildRequires:  %{scl_prefix}perl(deprecate)
+%endif
+BuildRequires:  %{scl_prefix}perl(Exporter)
+BuildRequires:  %{scl_prefix}perl(FileHandle)
+BuildRequires:  %{scl_prefix}perl(File::Spec)
+BuildRequires:  %{scl_prefix}perl(if)
+BuildRequires:  %{scl_prefix}perl(IPC::Cmd) >= 0.42
+BuildRequires:  %{scl_prefix}perl(Locale::Maketext::Simple)
+BuildRequires:  %{scl_prefix}perl(Module::Build) >= 0.32
+BuildRequires:  %{scl_prefix}perl(Module::Load::Conditional) >= 0.30
+BuildRequires:  %{scl_prefix}perl(Params::Check) >= 0.26
+BuildRequires:  %{scl_prefix}perl(vars)
+BuildRequires:  %{scl_prefix}perl(version)
+BuildRequires:  %{scl_prefix}perl(warnings)
+# Tests:
+BuildRequires:  %{scl_prefix}perl(CPANPLUS::Configure)
+BuildRequires:  %{scl_prefix}perl(CPANPLUS::Backend)
+BuildRequires:  %{scl_prefix}perl(CPANPLUS::Internals::Utils)
+BuildRequires:  %{scl_prefix}perl(CPANPLUS::Module::Author::Fake)
+BuildRequires:  %{scl_prefix}perl(CPANPLUS::Module::Fake)
+BuildRequires:  %{scl_prefix}perl(Data::Dumper)
+BuildRequires:  %{scl_prefix}perl(ExtUtils::Installed)
+BuildRequires:  %{scl_prefix}perl(ExtUtils::Packlist)
+BuildRequires:  %{scl_prefix}perl(File::Basename)
+BuildRequires:  %{scl_prefix}perl(FindBin)
+BuildRequires:  %{scl_prefix}perl(lib)
+BuildRequires:  %{scl_prefix}perl(Module::Build::ConfigData)
+BuildRequires:  %{scl_prefix}perl(Test::More) >= 0.47
+# Optional tests:
+%if !%{defined perl_bootstrap}
+BuildRequires:  %{scl_prefix}perl(Test::Pod) >= 1.00
+BuildRequires:  %{scl_prefix}perl(Test::Pod::Coverage) >= 1.00
+%endif
+Requires: %{scl_prefix}perl(:MODULE_COMPAT_%(scl enable %{scl} 'eval "$(perl -V:version)";echo $version')
+# This is a plug-in for CPANPLUS, specify reverse dependency here
+Requires:       %{scl_prefix}perl(CPANPLUS) >= 0.84
+%if 0%(perl -e 'print $] > 5.017')
+Requires:       %{scl_prefix}perl(deprecate)
+%endif
+Requires:       %{scl_prefix}perl(Exporter)
+Requires:       %{scl_prefix}perl(IPC::Cmd) >= 0.42
+Requires:       %{scl_prefix}perl(Module::Build) >= 0.32
+Requires:       %{scl_prefix}perl(Module::Load::Conditional) >= 0.30
+Requires:       %{scl_prefix}perl(Params::Check) >= 0.26
+
+# Remove under-specified dependencies
+%global __requires_exclude %{?__requires_exclude:%__requires_exclude|}^%{scl_prefix}perl\\((IPC::Cmd|Module::Load::Conditional|Params::Check)\\)$
+
+%description
+CPANPLUS::Dist::Build is a distribution class for Module::Build related
+modules. With this package, you can create, install and uninstall
+Module::Build-based perl modules by calling CPANPLUS::Dist methods.
+
+%prep
+%setup -q -n CPANPLUS-Dist-Build-%{version}
+%if !%{defined perl_bootstrap}
+# Remove bundled modules only if non-core modules are available becuase this
+# is a core module.
+rm -r ./inc/*
+sed -i -e '/^\/inc\//d' MANIFEST
+%if 0%{?rhel} >= 7
+sed -i -e '/^auto_license\s/d' Makefile.PL
+%endif
+%endif
+
+%build
+scl enable %{scl} 'perl Makefile.PL INSTALLDIRS=vendor; make %{?_smp_mflags}'
+
+%install
+scl enable %{scl} 'make pure_install DESTDIR=$RPM_BUILD_ROOT'
+find $RPM_BUILD_ROOT -type f -name .packlist -exec rm -f {} \;
+%{_fixperms} $RPM_BUILD_ROOT/*
+
+%check
+scl enable %{scl} 'make test'
+
+%files
+%doc Changes LICENSE README
+%{perl_vendorlib}/*
+%{_mandir}/man3/*
+
+%changelog
+* Sun Sep 07 2014 Jitka Plesnikova <jplesnik@redhat.com> - 0.70-295
+- Perl 5.20 re-rebuild of bootstrapped packages
+
+* Thu Aug 28 2014 Jitka Plesnikova <jplesnik@redhat.com> - 0.70-294
+- Perl 5.20 rebuild
+
+* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.70-293
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
+* Wed Aug 14 2013 Jitka Plesnikova <jplesnik@redhat.com> - 0.70-292
+- Perl 5.18 re-rebuild of bootstrapped packages
+
+* Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.70-291
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
+
+* Mon Jul 15 2013 Petr Pisar <ppisar@redhat.com> - 0.70-290
+- Increase release to favour standalone package
+
+* Fri Jul 12 2013 Petr Pisar <ppisar@redhat.com> - 0.70-3
+- Perl 5.18 rebuild
+
+* Mon Jun 17 2013 Petr Pisar <ppisar@redhat.com> - 0.70-2
+- Do not build-require Module::Install::AutoLicense on RHEL >= 7
+
+* Mon Jun 10 2013 Petr Pisar <ppisar@redhat.com> 0.70-1
+- Specfile autogenerated by cpanspec 1.78.
