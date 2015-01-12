@@ -36,9 +36,9 @@ sub go {
     $data = '%{?scl:%scl_package '.$name."}\n\n".$data;
     # And convert Name
     $data =~ s/(Name:[ \t]*)perl/$1${p}perl/s;
-    # Convert perl [Build]Requires and Provides
-    $data =~ s/((Conflicts|Requires):[ \t]*)(?<perl>perl(-devel|-\S+)?)\b/$1$p$+{perl}/sg;
-    $data =~ s/((?:Conflicts|Provides|Requires):[ \t]*)(perl\()/$1$p$2/sg;
+    # Convert perl [Build]Requires, Obsoletes and Provides
+    $data =~ s/((Conflicts|Obsoletes|Provides|Requires):[ \t]*)(?<perl>perl(-devel|-\S+)?)\b/$1$p$+{perl}/sg;
+    $data =~ s/((?:Conflicts|Obsoletes|Provides|Requires):[ \t]*)(perl\()/$1$p$2/sg;
     # Convert MODULE_COMPAT
     $data =~ s/Requires:(\h*)[^\n]*MODULE_COMPAT_[^\n]*/Requires:$1${p}perl(:MODULE_COMPAT_\%(${eo}eval "\$(perl -V:version)";echo \$version${ec}))/sg;
     # Convert %check
