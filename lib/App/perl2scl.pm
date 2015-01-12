@@ -41,7 +41,7 @@ sub go {
     $data =~ s/(Requires:[ \t]*)(perl\()/$1$p$2/sg;
     $data =~ s/(Provides:[ \t]*)(perl\()/$1$p$2/sg;
     # Convert MODULE_COMPAT
-    $data =~ s/Requires:[^\n]*MODULE_COMPAT_[^\n]*/Requires: ${p}perl(:MODULE_COMPAT_\%(${eo}eval "\$(perl -V:version)";echo \$version${ec}))/sg;
+    $data =~ s/Requires:(\h*)[^\n]*MODULE_COMPAT_[^\n]*/Requires:$1${p}perl(:MODULE_COMPAT_\%(${eo}eval "\$(perl -V:version)";echo \$version${ec}))/sg;
     # Convert %check
     my $check;
     $check++ if $data =~ s/(make test|\.\/Build test)([^\n]*)/${eo}$1$2${ec}/s;
