@@ -37,7 +37,7 @@ sub go {
     # And convert Name
     $data =~ s/(Name:[ \t]*)perl/$1${p}perl/s;
     # Convert perl [Build]Requires and Provides
-    $data =~ s/(Requires:[ \t]*)(?<perl>perl(-devel)?)\n/$1$p$+{perl}\n/sg;
+    $data =~ s/(Requires:[ \t]*)(?<perl>perl(-devel|-\S+)?)\b/$1$p$+{perl}/sg;
     $data =~ s/(Requires:[ \t]*)(perl\()/$1$p$2/sg;
     $data =~ s/(Provides:[ \t]*)(perl\()/$1$p$2/sg;
     # Convert MODULE_COMPAT
