@@ -52,6 +52,8 @@ sub go {
     my $install;
     $install++ if $data =~ s/make pure_install([^\n]*)/${eo}make pure_install$1${ec}/s;
     $install++ if $data =~ s/\.\/Build install([^\n]*)/${eo}.\/Build install$1${ec}/s;
+    # Convert %files
+    $data =~ s/%(\{?)license\1(\h)/%doc$2/sg;
     # Fix filters with ^perl
     $data =~ s/\^(perl\\*\()/^$p$1/sg;
 
@@ -77,8 +79,8 @@ sub go {
         unless $install;
     push @info, 'A perl-%{macro} style package name detected'
         if $data =~ /perl-\%/s;
-    push @info, '%{license} macro used.'
-        if $data =~ /\%\{?\??license\}?/s;
+    push @info, '%{license} macro used: ' . ${^MATCH}
+        if $data =~ /(?<!%)%\{?\??license\}?.*/p;
 
     if (@info && !$quiet) {
         print STDERR color('yellow') if $color;
