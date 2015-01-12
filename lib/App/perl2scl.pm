@@ -61,8 +61,8 @@ sub go {
         if $data =~ /perl -[^V]/s;
     push @info, "Either `if' or `deprecate' used."
         if $data =~ /perl(\(if\)|\(deprecate\))/s;
-    push @info, 'Explicit non-perl() style [build]requires, provides, obsoletes or blocks.'
-        if $data =~ /(Requires|Provides|Obsoletes|Blocks):( |\t)*[^\s%]/s;
+    push @info, 'Explicit non-perl() style [build]requires, provides, obsoletes or blocks: ' . ${^MATCH} . '.'
+        if $data =~ /(Requires|Provides|Obsoletes|Blocks):( |\t)*[^\s%].*/p;
     push @info, '%{rhel} macro used.'
         if $data =~ /\%\{\??rhel\}/s;
     push @info, 'Only one type of filters used.'
