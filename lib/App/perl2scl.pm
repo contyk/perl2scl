@@ -47,8 +47,8 @@ sub go {
     $check++ if $data =~ s/(make test|\.\/Build test)([^\n]*)/${eo}$1$2${ec}/s;
     # Convert %build
     my $build;
-    $build++ if $data =~ s/(%{__)?perl}? Makefile.PL(?<pargs>[^\n]*)\n+make(?<margs>[^\n]*)/${eo}perl Makefile.PL$+{pargs}; make$+{margs}${ec}/s;
-    $build++ if $data =~ s/(%{__)?perl}? Build.PL(?<pargs>[^\n]*)\n+\.\/Build(?<bargs>)/${eo}perl Build.PL$+{pargs}; .\/Build$+{bargs}${ec}/s;
+    $build++ if $data =~ s/(%{__)?perl}? Makefile.PL(?<pargs>[^\n]*)\n+make(?<margs>[^\n]*)/${eo}perl Makefile.PL$+{pargs} && make$+{margs}${ec}/s;
+    $build++ if $data =~ s/(%{__)?perl}? Build.PL(?<pargs>[^\n]*)\n+\.\/Build(?<bargs>)/${eo}perl Build.PL$+{pargs} && .\/Build$+{bargs}${ec}/s;
     # Convert %install
     my $install;
     $install++ if $data =~ s/make pure_install([^\n]*)/${eo}make pure_install$1${ec}/s;
