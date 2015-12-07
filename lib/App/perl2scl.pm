@@ -71,6 +71,8 @@ sub go {
             $data !~ /filter_from_(requires|provides)/s) ||
            ($data !~ /__(requires|provides)_exclude/s &&
             $data =~ /filter_from_(requires|provides)/s);
+    push @info, '%{fix_shbang_line} macro used.'
+        if $data =~ /%(\{)?\??fix_shbang_line\b/s;
     push @info, 'Converting %check failed'
         unless $check;
     push @info, 'Converting %build failed'
