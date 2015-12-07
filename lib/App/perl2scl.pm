@@ -66,6 +66,8 @@ sub go {
         if $data =~ /(Conflicts|Requires|Provides|Obsoletes|Blocks):( |\t)*[^\s%].*/p;
     push @info, '%{rhel} macro used.'
         if $data =~ /\%\{\??rhel\}/s;
+    push @info, '%{__perl} macro used: ' . ${^MATCH}
+        if $data =~ /.*%(?:\{\??)?__perl(?!\w).*/p;
     push @info, 'Only one type of filters used.'
         if ($data =~ /__(requires|provides)_exclude/s &&
             $data !~ /filter_from_(requires|provides)/s) ||
