@@ -52,7 +52,7 @@ sub go {
     $build++ if $data =~ s/(%{__)?perl}? Build.PL(?<pargs>[^\n]*)\n+\.\/Build(?<bargs>)/${eo}perl Build.PL$+{pargs} && .\/Build$+{bargs}${ec}/s;
     # Convert %install
     my $install;
-    $install++ if $data =~ s/make pure_install([^\n]*)/${eo}make pure_install$1${ec}/s;
+    $install++ if $data =~ s/(make (?:pure_)?install[^\n]*)/${eo}$1${ec}/s;
     $install++ if $data =~ s/\.\/Build install([^\n]*)/${eo}.\/Build install$1${ec}/s;
     # Convert %files
     $data =~ s/%(\{?)license\1(\h)/%doc$2/sg;
