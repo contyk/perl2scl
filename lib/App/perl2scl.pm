@@ -41,6 +41,8 @@ sub go {
     $data =~ s/((?:Conflicts|Obsoletes|Provides|Requires):[ \t]*)(perl\()/$1$p$2/sg;
     # Convert MODULE_COMPAT
     $data =~ s/Requires:(\h*)[^\n]*MODULE_COMPAT_[^\n]*/Requires:$1${p}perl(:MODULE_COMPAT_\%(${eo}eval "\$(perl -V:version)";echo \$version${ec}))/sg;
+    # Convert %if 0%(perl -e 'print $] > N.NNN') conditions
+    $data =~ s/^%if 0%\(perl -e 'print \$\] > (\d\.\d+)'\)/%if 0%(${eo}perl -e %{?scl:'"}'%{?scl:"'}print \$] > $1%{?scl:'"}'%{?scl:"'}${ec})/mg;
     # Convert %check
     my $check;
     $check++ if $data =~ s/(make test|\.\/Build test)([^\n]*)/${eo}$1$2${ec}/s;
@@ -59,7 +61,7 @@ sub go {
 
     # Warn on suspicious things
     push @info, "Suspicious `perl' calls detected: ${^MATCH}!"
-        if $data =~ /perl -[^V].*/p;
+        if $data =~ /.*(?<!\Q${eo}\E)perl -[^V].*/p;
     push @info, "Either `if' or `deprecate' used."
         if $data =~ /perl(\(if\)|\(deprecate\))/s;
     push @info, 'Explicit non-perl() style conflicts, [build]requires, provides, obsoletes or blocks: ' . ${^MATCH} . '.'
