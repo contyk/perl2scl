@@ -155,9 +155,17 @@ Don't print any notices.
 
 spec2scl
 
+=head1 REPOSITORY
+
+L<https://github.com/contyk/perl2scl>
+
+=head1 AUTHOR
+
+Petr Šabata <contyk@redhat.com>
+
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2014-2016 Petr Šabata <contyk@redhat.com>
+Copyright (c) 2014-2016 Petr Šabata
 
 See LICENSE for licensing details.
 
