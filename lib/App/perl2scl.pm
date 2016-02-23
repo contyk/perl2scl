@@ -157,7 +157,7 @@ spec2scl
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2014 Petr Šabata <contyk@redhat.com>
+Copyright (c) 2014-2016 Petr Šabata <contyk@redhat.com>
 
 See LICENSE for licensing details.
 
